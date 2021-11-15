@@ -1,3 +1,4 @@
+import json
 from random import *
 from tkinter import *
 from tkinter import messagebox
@@ -34,20 +35,41 @@ def clear_entrys():
     etr_password.delete(0, END)
 
 
-def add():
+def save():
     website = etr_web.get()
     email = etr_email.get()
     password = etr_password.get()
 
-    is_ok = messagebox.askokcancel(website, f"These are the detals entered: "
-                                            f"\nEmail: {email} "
-                                            f"\nPassword: {password} "
-                                            f"\nIs it ok to save?")
-    if is_ok:
-        with open("data.txt", "a+") as file:
-            file.write(f"{website} | {email} | {password}\n")
-            clear_entrys()
-            etr_web.focus()
+    new_data = {
+        website: {
+            "email": email,
+            "password": password
+        }
+    }
+
+    with open("data.json", "w+") as file:
+        # Read old data
+        data = json.load(file)
+        # Update old data with new data
+        data.update(new_data)
+        # Save updated data to file
+        json.dump(data, file, indent=4)
+
+        clear_entrys()
+        etr_web.focus()
+
+
+def find_data():
+    website = etr_web.get()
+
+    with open("data.json", "r") as file:
+        data = json.load(file)
+        info = data.get(website)
+
+        if info is not None:
+            messagebox.showinfo(title="Data", message=f"Email: {info['email']}, Password: {info['password']}")
+
+        # print(data)
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -73,8 +95,8 @@ lbl_password = Label(text="Password:")
 lbl_password.grid(row=3, column=0)
 
 # --------------- Entrys --------------- #
-etr_web = Entry(width=39)
-etr_web.grid(row=1, column=1, columnspan=2)
+etr_web = Entry(width=21)
+etr_web.grid(row=1, column=1)
 
 etr_email = Entry(width=39)
 etr_email.insert(0, "hugo.andreassa@gmail.com")
@@ -84,10 +106,13 @@ etr_password = Entry(width=21)
 etr_password.grid(row=3, column=1)
 
 # --------------- Buttons --------------- #
-btn_generate = Button(text="Generate Password", command=generate_password)
+btn_generate = Button(width=15, text="Find", command=find_data)
+btn_generate.grid(row=1, column=2)
+
+btn_generate = Button(width=15, text="Generate Password", command=generate_password)
 btn_generate.grid(row=3, column=2)
 
-btn_add = Button(width=33, text="Add", command=add)
+btn_add = Button(width=33, text="Add", command=save)
 btn_add.grid(row=4, column=1, columnspan=2)
 
 window.mainloop()
