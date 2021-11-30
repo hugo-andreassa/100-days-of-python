@@ -1,4 +1,5 @@
 import requests
+from twilio.rest import Client
 
 STOCK_NAME = "TSLA"
 COMPANY_NAME = "Tesla Inc"
@@ -7,9 +8,27 @@ STOCK_ENDPOINT = "https://www.alphavantage.co/query"
 STOCK_API_KEY = "ZVMWNAQG2UVCAGOR"
 
 NEWS_ENDPOINT = "https://newsapi.org/v2/everything"
+NEWS_API_KEY = "4e7a8d77891a41b3982a1e76cb074800"
+
+TWILLIO_SID = "AC6d2792e2305e4384c2ecc9e2982a8f71"
+TWILLIO_AUTH_TOKEN = "b39b62c6bb7bf76600896ab5a9c9ef5b"
+
+up_down = None
+
+
+def send_message(text: str):
+    client = Client(TWILLIO_SID, TWILLIO_AUTH_TOKEN)
+
+    message = client.messages.create(
+        body=text,
+        from_='+19704429461',
+        to='+5511956492900'
+    )
+    print(message.sid)
 
 
 def get_stock_percentage() -> float:
+    global up_down
     # yesterday's closing stock price.
     stock_params = {
         "function": "TIME_SERIES_DAILY",
@@ -28,6 +47,11 @@ def get_stock_percentage() -> float:
     second_stock_price = float(stock_data[1]["4. close"])
     # Find the positive difference between 1 and 2. e.g. 40 - 20 = -20, but the positive difference is 20.
     stock_price_difference = abs(first_stock_price - second_stock_price)
+    if stock_price_difference > 0:
+        up_down = "🔺"
+    else:
+        up_down = "🔻"
+
     stock_percentage = (stock_price_difference / first_stock_price) * 100
 
     return stock_percentage
@@ -36,26 +60,24 @@ def get_stock_percentage() -> float:
 def get_news() -> str:
     news_params = {
         "qInTitle": COMPANY_NAME,
-        "apiKey": "4e7a8d77891a41b3982a1e76cb074800"
+        "apiKey": NEWS_API_KEY
     }
-    news_reponse = requests.get(NEWS_ENDPOINT, news_params)
-    news_reponse.raise_for_status()
-    news_data = news_reponse.json()["articles"]
-    articles = news_data[:3]
-    print(articles)
+    news_response = requests.get(NEWS_ENDPOINT, news_params)
+    news_response.raise_for_status()
+    news_data = news_response.json()["articles"]
+    return news_data[:3]
 
 
 percentage = get_stock_percentage()
 if percentage >= 1:
-    news = get_news()
+    articles = get_news()
 
-## STEP 3: Use twilio.com/docs/sms/quickstart/python
-# to send a separate message with each article's title and description to your phone number.
+    formatted_articles = [
+        f"\n{STOCK_NAME}: {up_down}{percentage:.2f}%\nHeadline: {article['title']}. \nBrief: {article['description']}" for
+        article in articles]
 
-# TODO 8. - Create a new list of the first 3 article's headline and description using list comprehension.
-
-# TODO 9. - Send each article as a separate message via Twilio.
-
+    for msg in formatted_articles:
+        send_message(msg)
 
 # Optional TODO: Format the message like this:
 """
