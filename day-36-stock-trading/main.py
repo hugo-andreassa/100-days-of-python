@@ -73,19 +73,8 @@ if percentage >= 1:
     articles = get_news()
 
     formatted_articles = [
-        f"\n{STOCK_NAME}: {up_down}{percentage:.2f}%\nHeadline: {article['title']}. \nBrief: {article['description']}" for
-        article in articles]
+        f"\n{STOCK_NAME}: {up_down}{percentage:.2f}%\nHeadline: {article['title']}. \nBrief: {article['description']}"
+        for article in articles]
 
     for msg in formatted_articles:
         send_message(msg)
-
-# Optional TODO: Format the message like this:
-"""
-TSLA: 🔺2%
-Headline: Were Hedge Funds Right About Piling Into Tesla Inc. (TSLA)?. 
-Brief: We at Insider Monkey have gone over 821 13F filings that hedge funds and prominent investors are required to file by the SEC The 13F filings show the funds' and investors' portfolio positions as of March 31st, near the height of the coronavirus market crash.
-or
-"TSLA: 🔻5%
-Headline: Were Hedge Funds Right About Piling Into Tesla Inc. (TSLA)?. 
-Brief: We at Insider Monkey have gone over 821 13F filings that hedge funds and prominent investors are required to file by the SEC The 13F filings show the funds' and investors' portfolio positions as of March 31st, near the height of the coronavirus market crash.
-"""
