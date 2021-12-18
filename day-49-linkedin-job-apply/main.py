@@ -1,42 +1,65 @@
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 import time
 
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
+ACCOUNT_EMAIL = ""
+ACCOUNT_PASSWORD = ""
+PHONE = ""
 
-EMAIL = "hugo.andreassa@gmail.com"
-PASSWORD = "paquitoekiara12"
-SITE_LINK = "https://www.linkedin.com/jobs/search/?f_LF=f_AL" \
-            "&geoId=105871508&keywords=Desenvolvedor%20para%20iOS&location=S%C3%A3o%20Paulo%2C%20Brasil"
-CHROME_DRIVER_PATH = "C:/Users/Hugo/Documents/GitHub/Outros/chromedriver.exe"
+chrome_driver_path = ""
+driver = webdriver.Chrome(chrome_driver_path)
+driver.get("https://www.linkedin.com/jobs/search/?f_LF=f_AL&geoId=102257491&keywords=marketing%20intern&location=London%2C%20England%2C%20United%20Kingdom&redirect=false&position=1&pageNum=0")
 
-driver = webdriver.Chrome(service=Service(CHROME_DRIVER_PATH))
+time.sleep(2)
+sign_in_button = driver.find_element_by_link_text("Sign in")
+sign_in_button.click()
 
-driver.get(SITE_LINK)
-
-entrar_btn = driver.find_element(By.CSS_SELECTOR, 'a.nav__button-secondary')
-entrar_btn.click()
+time.sleep(5)
+email_field = driver.find_element_by_id("username")
+email_field.send_keys(ACCOUNT_EMAIL)
+password_field = driver.find_element_by_id("password")
+password_field.send_keys(ACCOUNT_PASSWORD)
+password_field.send_keys(Keys.ENTER)
 
 time.sleep(5)
 
-username_input = driver.find_element(By.CSS_SELECTOR, 'input#username')
-username_input.send_keys(EMAIL)
+all_listings = driver.find_elements_by_css_selector(".job-card-container--clickable")
 
-password_input = driver.find_element(By.CSS_SELECTOR, 'input#password')
-password_input.send_keys(PASSWORD)
+for listing in all_listings:
+    print("called")
+    listing.click()
+    time.sleep(2)
+    try:
+        apply_button = driver.find_element_by_css_selector(".jobs-s-apply button")
+        apply_button.click()
 
-entrar_btn = driver.find_element(By.XPATH, '//*[@id="organic-div"]/form/div[3]/button')
-entrar_btn.click()
+        time.sleep(5)
+        phone = driver.find_element_by_class_name("fb-single-line-text__input")
+        if phone.text == "":
+            phone.send_keys(PHONE)
+        
+        submit_button = driver.find_element_by_css_selector("footer button")
+        if submit_button.get_attribute("data-control-name") == "continue_unify":
+            close_button = driver.find_element_by_class_name("artdeco-modal__dismiss")
+            close_button.click()
+            
+            time.sleep(2)
+            discard_button = driver.find_elements_by_class_name("artdeco-modal__confirm-dialog-btn")[1]
+            discard_button.click()
+            print("Complex application, skipped.")
+            continue
+        else:
+            submit_button.click()
 
-time.sleep(10)
+        time.sleep(2)
+        close_button = driver.find_element_by_class_name("artdeco-modal__dismiss")
+        close_button.click()
 
-job_cards = driver.find_elements(By.XPATH, '/html/body/div[6]/div[3]/div[3]/div[2]/'
-                                           'div/section[1]/div/div/ul/li/div/div/div[1]/div[2]/div[1]')
+    except NoSuchElementException:
+        print("No application button, skipped.")
+        continue
 
-print([item.text for item in job_cards])
+time.sleep(5)
+driver.quit()
 
-# elements = driver.find_elements(By.CLASS_NAME, 'job-card-container')
-# print(elements)
-# print([element.text for element in elements])
-
-# driver.quit()
