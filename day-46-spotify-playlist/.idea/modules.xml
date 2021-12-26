@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../day-45-100-movies-to-watch/.idea/day-45-100-movies-to-watch.iml" filepath="$PROJECT_DIR$/../day-45-100-movies-to-watch/.idea/day-45-100-movies-to-watch.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/day-46-spotify-playlist.iml" filepath="$PROJECT_DIR$/.idea/day-46-spotify-playlist.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../day-47-amazon-price/.idea/day-47-amazon-price.iml" filepath="$PROJECT_DIR$/../day-47-amazon-price/.idea/day-47-amazon-price.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../day-47-automated-amazon-price/.idea/day-47-automated-amazon-price.iml" filepath="$PROJECT_DIR$/../day-47-automated-amazon-price/.idea/day-47-automated-amazon-price.iml" />
     </modules>
   </component>
 </project>
